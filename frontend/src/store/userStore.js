@@ -9,7 +9,7 @@ const useUserStore = create((set) => ({
   loading: false,
   checkingAuth: true,
   userList: [],
-
+  cart:[],
   // ---------------- AUTH ----------------
   register: async ({ email, name, password, confirmPassword }) => {
     try {
@@ -231,17 +231,28 @@ const useUserStore = create((set) => ({
   },
 
   // ---------------- CART ----------------
+  getCart: async()=>{
+    try{
+      set({loading:true})
+      const res=await axios.get(baseURL+'/cart/get-cart',{withCredentials:true});
+      if (res?.data?.success) {
+        set({cart:[...(res.data.data)]});
+      } 
+    }
+    catch(err){
+      console.log(err.message)
+      toast.error("Some Products are no longer available"); 
+    }
+    finally{
+      set({loading:false});
+    }
+  },
   addToCart: async (id) => {
     try {
       set({ loading: true });
       const res = await axios.put(baseURL + "/cart/add-to-cart/" + id, {}, { withCredentials: true });
       if (res?.data?.success) {
-        set((state) => ({
-          user: {
-            ...state.user,
-            cart: res?.data?.data, // backend should return full populated cart
-          },
-        }));
+        set({cart:[...(res.data.data)]});
         toast.success("Snack added to cart");
       } else {
         toast.error("Failed to add snack to cart");
@@ -250,6 +261,38 @@ const useUserStore = create((set) => ({
       toast.error("Failed to add snack to cart");
     } finally {
       set({ loading: false }); // corrected from 'true' to 'false'
+    }
+  },
+  removeFromCart: async (id) => {
+    try {
+      set({ loading: true });
+      const res = await axios.put(baseURL + "/cart/remove-from-cart/" + id, {}, { withCredentials: true });
+      if (res?.data?.success) {
+        set({cart:[...(res.data.data)]});
+        toast.success("Snack removed from cart");
+      } else {
+        toast.error("Failed to remove snack from cart");
+      }
+    } catch (err) {
+      toast.error("Failed to remove snack from cart");
+    } finally {
+      set({ loading: false });
+    }
+  },
+  deleteFromCart: async (id) => {
+    try {
+      set({ loading: true });
+      const res = await axios.delete(baseURL + "/cart/remove-product-from-cart/" + id, { withCredentials: true });
+      if (res?.data?.success) {
+        set({cart:[...(res.data.data)]});
+        toast.success("Snack removed from cart");
+      } else {
+        toast.error("Failed to remove snack from cart");
+      }
+    } catch (err) {
+      toast.error("Failed to remove snack from cart");
+    } finally {
+      set({ loading: false });
     }
   },
 }));

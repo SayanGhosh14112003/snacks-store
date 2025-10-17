@@ -2,15 +2,17 @@ import { useEffect } from "react";
 import ProductCard from "./ProductCard";
 import useProductStore from "../store/productStore";
 import useCategoryStore from "../store/categoryStore";
-
+import useUserStore from "../store/userStore";
 export default function Product() {
-    const handleAddToCart = (product) => {
-        console.log("Added to cart:", product);
-    };
-
+    
     const getProducts = useProductStore((state) => state.getProducts);
     const products = useProductStore((state) => state.products);
     const activeCategory = useCategoryStore((state) => state.activeCategory);
+    const addToCart=useUserStore((state)=>state.addToCart)
+    const handleAddToCart = async(product) => {
+        console.log("Added to cart:", product);
+        await addToCart(product?._id)
+    };
 
     useEffect(() => {
         (async () => {

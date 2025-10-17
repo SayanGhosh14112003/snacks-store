@@ -3,11 +3,12 @@ import useUserStore from "../store/userStore";
 export default function ProductCard({ product, onAddToCart }) {
   const { title, description, price, image, merchantPrice, COD } = product;
   const user = useUserStore((state) => state.user);
+  const loading = useUserStore((state) => state.loading);
   const isMerchant = user?.role === "merchant";
   const isAdmin = user?.role === "admin";
 
   return (
-    <div className="bg-[rgb(247,230,204)] rounded-2xl shadow-md hover:shadow-2xl hover:scale-[1.03] transition-all duration-300 flex flex-col overflow-hidden border border-[rgb(250,177,47)]">
+    <div className="bg-[rgb(255,255,255)] rounded-2xl shadow-md hover:shadow-2xl hover:scale-[1.03] transition-all duration-300 flex flex-col overflow-hidden border border-[rgb(250,177,47)]">
       {/* Product Image */}
       <div className="relative w-full h-52 overflow-hidden">
         <img
@@ -82,7 +83,8 @@ export default function ProductCard({ product, onAddToCart }) {
 
         {/* Add to Cart Button */}
         <button
-          onClick={() => onAddToCart(product)}
+          onClick={async() => await onAddToCart(product)}
+          disabled={loading}
           className="mt-4 bg-gradient-to-r from-[rgb(250,177,47)] to-[rgb(250,129,47)] text-white font-semibold py-2.5 px-5 rounded-xl shadow-md hover:from-[rgb(250,129,47)] hover:to-[rgb(221,3,3)] transition-all duration-300"
         >
           Add to Cart

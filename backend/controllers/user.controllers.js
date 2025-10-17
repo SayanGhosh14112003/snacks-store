@@ -127,7 +127,6 @@ export const login = async (req, res) => {
         name: userExists.name,
         role: userExists.role,
         email: userExists.email,
-        cart: userExists.cart,
         addresses: userExists.addresses
       }
     });
@@ -213,7 +212,6 @@ export const getMyDetails = (req, res) => {
       _id:req.user._id,
       name:req.user.name,
       email:req.user.email,
-      cart:req.user.cart,
       addresses:req.user.addresses,
       role:req.user.role
     }
@@ -258,7 +256,13 @@ export const changeRole = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      data: user,
+      data: {
+        _id: user._id,
+        name: user.name,
+        role: user.role,
+        email: user.email,
+        addresses: user.addresses
+      }
     });
   } catch (err) {
     console.error("Error changing role:", err);

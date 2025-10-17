@@ -9,7 +9,6 @@ const useCategoryStore = create((set, get) => ({
   loading: false,
   activeCategory: "All",
 
-  // ✅ Get all categories
   getCategories: async () => {
     try {
       set({ loading: true });
