@@ -11,12 +11,12 @@ dotenv.config();
 // });
 
 // ✅ Utility to compute total amount safely on backend
-// function computeTotalAmount(orderProducts) {
-//   return orderProducts.reduce(
-//     (sum, item) => sum + item.price * item.totalQuantity,
-//     0
-//   );
-// }
+function computeTotalAmount(orderProducts) {
+  return orderProducts.reduce(
+    (sum, item) => sum + item.price * item.totalQuantity,
+    0
+  );
+}
 
 // export const createOrder = async (req, res) => {
 //   try {

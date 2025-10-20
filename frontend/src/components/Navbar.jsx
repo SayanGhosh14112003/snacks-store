@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import useUserStore from "../store/userStore";
 import {
@@ -18,14 +18,22 @@ export default function Navbar() {
   const user = useUserStore((state) => state.user);
   const logout = useUserStore((state) => state.logout);
   const loading = useUserStore((state) => state.loading);
+  const cart = useUserStore((state) => state.cart || []);
+  const getCart = useUserStore((state) => state.getCart);
+  const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+  useEffect(() => {
+    (async () => {
+      if (user) {
+        await getCart();
+      }
+    })();
+  }, [user]);
 
-  // ✅ Updated link style — no box/border by default
   const linkClass = ({ isActive }) =>
     `flex items-center gap-2 px-4 py-2 rounded-md font-semibold transition-all duration-300
-    ${
-      isActive
-        ? "bg-[rgb(250,177,47)] text-white shadow-md"
-        : "text-white hover:bg-[rgb(221,3,3)] hover:text-white hover:shadow-md"
+    ${isActive
+      ? "bg-[rgb(250,177,47)] text-white shadow-md"
+      : "text-white hover:bg-[rgb(221,3,3)] hover:text-white hover:shadow-md"
     }`;
 
   return (
@@ -48,8 +56,13 @@ export default function Navbar() {
             </NavLink>
           )}
 
-          <NavLink to="/cart" className={linkClass}>
+          <NavLink to="/cart" className="relative flex items-center gap-2 px-4 py-2 rounded-md text-white hover:bg-[rgb(221,3,3)] transition-all duration-300">
             <ShoppingCart size={18} /> Cart
+            {cartCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full font-semibold">
+                {cartCount}
+              </span>
+            )}
           </NavLink>
 
           <NavLink to="/orders" className={linkClass}>
@@ -75,8 +88,7 @@ export default function Navbar() {
                 disabled={loading}
                 className="flex items-center gap-2 text-white hover:bg-[rgb(221,3,3)] px-4 py-2 rounded-md transition-all duration-300 font-semibold"
               >
-                <LogOut size={18} />
-                Logout
+                <LogOut size={18} /> Logout
               </button>
             </>
           )}
@@ -112,9 +124,14 @@ export default function Navbar() {
             <NavLink
               onClick={() => setOpen(false)}
               to="/cart"
-              className={linkClass}
+              className="relative flex items-center gap-2 px-4 py-2 rounded-md text-white hover:bg-[rgb(221,3,3)] transition-all duration-300"
             >
               <ShoppingCart size={18} /> Cart
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full font-semibold">
+                  {cartCount}
+                </span>
+              )}
             </NavLink>
 
             <NavLink
