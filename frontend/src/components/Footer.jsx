@@ -16,13 +16,13 @@ export default function Footer() {
         <div>
           <h2 className="font-semibold mb-2 text-sm">Reach Out to Us</h2>
           <ul className="space-y-2">
-            <li className="flex items-center gap-2">
+            <li className="flex items-center gap-2 cursor-pointer">
               <Mail className="text-[rgb(221,3,3)] w-5 h-5" />
-              <span>contact@devisnacks.com</span>
+              <a href="mailto:shreedevisnacks@gmail.com">shreedevisnacks@gmail.com</a>
             </li>
-            <li className="flex items-center gap-2">
+            <li className="flex items-center gap-2 cursor-pointer">
               <Phone className="text-[rgb(221,3,3)] w-5 h-5" />
-              <span>+91 9876543210</span>
+              <a href="tel:+919038568722">+91 9038568722</a>
             </li>
           </ul>
         </div>
@@ -34,7 +34,6 @@ export default function Footer() {
             <Facebook className="w-6 h-6 hover:text-[rgb(221,3,3)] cursor-pointer" />
             <Twitter className="w-6 h-6 hover:text-[rgb(221,3,3)] cursor-pointer" />
             <Instagram className="w-6 h-6 hover:text-[rgb(221,3,3)] cursor-pointer" />
-            <Linkedin className="w-6 h-6 hover:text-[rgb(221,3,3)] cursor-pointer" />
           </div>
         </div>
       </div>

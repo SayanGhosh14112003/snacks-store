@@ -82,13 +82,14 @@ export default function ProductCard({ product, onAddToCart }) {
         </p>
 
         {/* Add to Cart Button */}
-        <button
+        {user && <button
           onClick={async() => await onAddToCart(product)}
           disabled={loading}
           className="mt-4 bg-gradient-to-r from-[rgb(250,177,47)] to-[rgb(250,129,47)] text-white font-semibold py-2.5 px-5 rounded-xl shadow-md hover:from-[rgb(250,129,47)] hover:to-[rgb(221,3,3)] transition-all duration-300"
         >
           Add to Cart
         </button>
+        }
       </div>
     </div>
   );

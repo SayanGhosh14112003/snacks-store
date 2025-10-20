@@ -1,22 +1,22 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Mail } from "lucide-react";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
+import useUserStore from "../store/userStore";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
+  const forgetPassword = useUserStore((state) => state.forgetPassword);
   const navigate = useNavigate();
 
-  const handleSendLink = (e) => {
+  const handleSendLink = async(e) => {
     e.preventDefault();
     if (!email) {
       toast.error("Please enter your email!");
       return;
     }
-
-    // Here you can call API to send reset link
-    toast.success("Password reset link sent to your email!");
-    setTimeout(() => navigate("/login"), 1500);
+    const success=await forgetPassword(email);
+    if(success)navigate("/login");
   };
 
   return (

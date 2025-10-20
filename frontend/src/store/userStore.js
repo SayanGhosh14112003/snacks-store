@@ -1,5 +1,5 @@
 import toast from "react-hot-toast";
-import axios from "axios";
+import axios from "../config/axios";
 import { create } from "zustand";
 
  const baseURL = import.meta.env.VITE_API_URL || "/api";
@@ -10,6 +10,8 @@ const useUserStore = create((set) => ({
   checkingAuth: true,
   userList: [],
   cart:[],
+  myOrders: [],
+  orders: [],
   // ---------------- AUTH ----------------
   register: async ({ email, name, password, confirmPassword }) => {
     try {
@@ -115,6 +117,50 @@ const useUserStore = create((set) => ({
     } catch (err) {
       toast.error("Failed to Logout");
     } finally {
+      set({ loading: false });
+    }
+  },
+
+  forgetPassword: async (email) => {
+    try {
+      set({ loading: true });
+      const res = await axios.post(baseURL + "/auth/forgot-password", { email }, { withCredentials: true });
+
+      if (res?.data?.success) {
+        toast.success("Password reset link sent to your email");
+        return true;
+      }
+      else {
+        toast.error("Failed to send reset link");
+        return false;
+      }
+
+    } catch (err) {
+      toast.error("Failed to send reset link");
+      return false;
+    }
+    finally {
+      set({ loading: false });
+    }
+
+  },
+  resetPassword: async ({token, password, confirmPassword}) => {
+    try {
+      set({ loading: true });
+      const res = await axios.post(baseURL + `/auth/reset-password/${token}`, { password, confirmPassword }, { withCredentials: true });
+
+      if (res?.data?.success) {
+        return true;
+      }
+      else {
+        toast.error(res?.data?.message || "Failed to reset password");
+        return false;
+      }
+    } catch (err) {
+      toast.error("Failed to reset password");
+      return false;
+    }
+    finally {
       set({ loading: false });
     }
   },
@@ -295,6 +341,84 @@ const useUserStore = create((set) => ({
       set({ loading: false });
     }
   },
+
+  //orders
+  cashOnDelivery: async (cart,address) => {
+    try {
+      set({ loading: true });
+      const res = await axios.post(baseURL + "/order/cash-on-delivery", {cart,address}, { withCredentials: true });
+      if (res?.data?.success) {
+        toast.success("Order placed successfully");
+        set({ cart: [] });
+        return true;
+      } else {
+        toast.error(res?.data?.message || "Failed to place order");
+        return false;
+      }
+    } catch (err) {
+      toast.error("Failed to place order");
+      return false;
+    }
+    finally {
+      set({ loading: false });
+    }
+  },
+  getMyOrders: async () => {
+    try {
+      set({ loading: true });
+      const res = await axios.get(baseURL + "/order/my-orders", { withCredentials: true });
+      if (res?.data?.success) {
+        set({ myOrders: res?.data?.data });
+      } else {
+        toast.error("Failed to fetch orders");
+      }
+    } catch (err) {
+      toast.error("Failed to fetch orders");
+    } finally {
+      set({ loading: false });
+    }
+  },
+getOrders: async () => {
+    try {
+      set({ loading: true });
+      const res = await axios.get(baseURL + "/order/all-orders", { withCredentials: true });
+      if (res?.data?.success) {
+        set({ orders: res?.data?.data });
+      } else {
+        toast.error("Failed to fetch orders");
+      }
+    } catch (err) {
+      toast.error("Failed to fetch orders");
+    }
+    finally {
+      set({ loading: false });
+    }
+  },
+  updateOrderStatus: async (orderId, status) => {
+    try {
+      set({ loading: true });
+      const res = await axios.put(baseURL + `/order/update-order-status/${orderId}`, { status }, { withCredentials: true });
+      if (res?.data?.success) {
+        set((state) => ({
+          orders: state?.orders?.map((order) =>
+            order._id === orderId ? { ...order, status } : order
+          ),
+        }));
+        toast.success("Order status updated successfully");
+        return true;
+      } else {
+        toast.error("Failed to update order status");
+        return false;
+      }
+    } catch (err) {
+      toast.error("Failed to update order status");
+      return false;
+    } finally {
+      set({ loading: false });
+    }
+  },
+
 }));
+
 
 export default useUserStore;

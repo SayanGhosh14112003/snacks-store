@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-
+import validator from 'validator';  
 const orderSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
@@ -29,7 +29,7 @@ const orderSchema = new mongoose.Schema({
     ],
     status: {
         type: String,
-        enum: ["PENDING", "DELIVERED", "ACCEPTED", "CANCELLED"],
+        enum: ["ORDERED SUCCESSFULLY", "DELIVERED", "CANCELLED"],
         default: "PENDING"
     },
     totalAmount: {

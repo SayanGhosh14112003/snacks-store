@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import toast from "react-hot-toast";
-import axios from "axios";
+import axios from "../config/axios";
 
 const baseURL = import.meta.env.VITE_API_URL || "/api";
 

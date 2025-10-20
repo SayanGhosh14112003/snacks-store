@@ -20,22 +20,22 @@ export default function CategoryManagement() {
     getCategories();
   }, []);
 
-  const handleCreateOrUpdateCategory = (e) => {
+  const handleCreateOrUpdateCategory = async(e) => {
     e.preventDefault();
     if (!title.trim()) {
       alert("Please enter a category title!");
       return;
     }
 
+    setShowModal(false);
     if (editCategoryId) {
-      updateCategory(editCategoryId, title);
+      await updateCategory(editCategoryId, title);
       setEditCategoryId(null);
     } else {
-      createCategory(title);
+      await createCategory(title);
     }
 
     setTitle("");
-    setShowModal(false);
   };
 
   const handleEdit = (cat) => {

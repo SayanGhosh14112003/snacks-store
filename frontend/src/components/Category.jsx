@@ -8,9 +8,7 @@ import useCategoryStore from "../store/categoryStore";
 const colors = [
   "bg-[rgb(250,177,47)]",
   "bg-[rgb(250,129,47)]",
-  "bg-[rgb(221,3,3)]",
-  "bg-[rgb(255,200,150)]",
-  "bg-[rgb(255,220,180)]",
+  "bg-[rgb(221,3,3)]"
 ];
 
 export default function Category() {

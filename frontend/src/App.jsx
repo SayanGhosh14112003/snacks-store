@@ -15,6 +15,7 @@ import OrderManagement from './pages/OrderManagement'
 import CategoryManagement from './pages/CategoryManagement'
 import UserManagement from './pages/UserManagement'
 import Account from './pages/Account'
+import ResetPassword from './pages/ResetPassword'
 function App() {
   const user = useUserStore((state) => state.user)
   const checkingAuth = useUserStore((state) => state.checkingAuth);
@@ -54,6 +55,7 @@ function App() {
           <Route path="/orders" element={user ? <Order /> : <Navigate to="/login" />} />
           <Route path="/account" element={user ? <Account /> : <Navigate to="/login" />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword/>} />
           <Route path="*" element={<h1 className='text-3xl font-bold text-center mt-20'>404 - Page Not Found!</h1>} />
         </Routes>
       </div>

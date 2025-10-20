@@ -69,11 +69,11 @@ export default function ProductManagement() {
         });
 
         if (showEditModal && selectedProduct) {
-            await updateProduct(selectedProduct._id, data);
             setShowEditModal(false);
+            await updateProduct(selectedProduct._id, data);
         } else {
-            await createProduct(data);
             setShowAddModal(false);
+            await createProduct(data);
         }
 
         resetForm();

@@ -7,7 +7,7 @@ router.post('/register',register);
 router.post('/verify-email',verifyEmail)
 router.post('/login',login)
 router.post('/logout',logout)
-router.post('/forget-password',forgetPassword);
+router.post('/forgot-password',forgetPassword);
 router.post('/reset-password/:token',resetPassword);
 router.get('/my-details',checkUser,getMyDetails);
 router.get('/get-all-users',checkUser,checkAdmin,getAllUsers);

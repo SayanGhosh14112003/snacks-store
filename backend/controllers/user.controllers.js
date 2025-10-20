@@ -6,11 +6,11 @@ import { v4 as uuidv4 } from 'uuid';
 
 const generateTokens = (userId) => {
   const accessToken = jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, {
-    expiresIn: "15m",
+    expiresIn: "1m",
   });
 
   const refreshToken = jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET, {
-    expiresIn: "1h",
+    expiresIn: "1m",
   });
 
   return { accessToken, refreshToken };
@@ -23,7 +23,7 @@ const setCookies = (res, accessToken, refreshToken) => {
     httpOnly: true, // cannot be accessed by JS (safer)
     secure: false,  // dev: allow HTTP
     sameSite: "lax", // dev-friendly
-    maxAge: 15 * 60 * 1000, // 15 minutes
+    maxAge: 1 * 60 * 1000, // 15 minutes
   });
 
   // Refresh token: 1 hour
@@ -31,7 +31,7 @@ const setCookies = (res, accessToken, refreshToken) => {
     httpOnly: true,
     secure: false, // dev: allow HTTP
     sameSite: "lax",
-    maxAge: 60 * 60 * 1000, // 1 hour
+    maxAge: 1 * 60 * 1000, // 1 hour
   });
 };
 
