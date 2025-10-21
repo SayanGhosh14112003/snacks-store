@@ -29,7 +29,7 @@ const orderSchema = new mongoose.Schema({
     ],
     status: {
         type: String,
-        enum: ["ORDERED SUCCESSFULLY", "DELIVERED", "CANCELLED"],
+        enum: ["ORDERED SUCCESSFULLY", "DELIVERED", "CANCELLED", "NOT COMPLETED"],
         default: "PENDING"
     },
     totalAmount: {
@@ -79,15 +79,6 @@ const orderSchema = new mongoose.Schema({
             }
         }
 }, { timestamps: true });
-
-orderSchema.pre("save", function (next) {
-  let total = 0;
-  this.products.forEach((item) => {
-    total += item.price * item.totalQuantity;
-  });
-  this.totalAmount = total;
-  next();
-});
 
 const orderModel = mongoose.model("order", orderSchema);
 export default orderModel;

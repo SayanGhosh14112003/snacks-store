@@ -4,6 +4,7 @@ import { Trash2, Plus, Minus } from "lucide-react";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+
 export default function Cart() {
   const user = useUserStore((state) => state.user);
   const getCart = useUserStore((state) => state.getCart);
@@ -16,6 +17,10 @@ export default function Cart() {
   const deleteAddress = useUserStore((state) => state.deleteAddress);
   const updateAddress = useUserStore((state) => state.updateAddress);
   const cashOnDelivery = useUserStore((state) => state.cashOnDelivery);
+  const createOrder = useUserStore((state) => state.createOrder);
+  const verifyPayment = useUserStore((state) => state.verifyPayment);
+  const baseURL = import.meta.env.VITE_BASE_URL || "http://localhost:5000";
+
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [newAddress, setNewAddress] = useState({ phone: "", location: "", pincode: "" });
   const [editAddress, setEditAddress] = useState(null);
@@ -23,6 +28,8 @@ export default function Cart() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [payment, setPayment] = useState("UPI");
+  const navigate = useNavigate();
+
   // -------- PRICE CALCULATION --------
   const totalPrice = useMemo(() => {
     if (!cart) return 0;
@@ -36,7 +43,7 @@ export default function Cart() {
   const allCodAvailable = cart?.every((item) => item.product.COD);
   const discount = payment === "UPI" ? totalPrice * 0.01 : 0;
   const finalAmount = totalPrice - discount;
-  const navigate=useNavigate();
+
   useEffect(() => {
     (async () => {
       await getCart();
@@ -102,23 +109,69 @@ export default function Cart() {
   };
 
   // -------- CHECKOUT --------
-  const handleCheckout = async() => {
+  const handleCheckout = async () => {
     if (!selectedAddress) return toast.error("Please select a delivery address");
-    const {phone,location,pincode}=user.addresses.find((addr) => addr._id === selectedAddress);
-    if(!phone||!location||!pincode){
+    const { phone, location, pincode } = user.addresses.find(
+      (addr) => addr._id === selectedAddress
+    );
+    if (!phone || !location || !pincode)
       return toast.error("Selected address is incomplete");
-    }
+
+    // ✅ COD flow (unchanged)
     if (payment === "COD") {
-      if (!allCodAvailable) {
-          return toast.error("Some items in your cart do not support Cash on Delivery");
-        }
-      else{
-        const success=await cashOnDelivery(cart,{phone,location,pincode});
-        if(success)navigate('/orders');
+      if (!allCodAvailable)
+        return toast.error("Some items in your cart do not support Cash on Delivery");
+      const success = await cashOnDelivery(cart, { phone, location, pincode });
+      if (success) navigate("/orders");
+      return;
+    }
+
+    // ✅ Razorpay flow
+    if (payment === "UPI") {
+      try {
+        const orderCreated = await createOrder(cart, { phone, location, pincode });
+        if (!orderCreated) return;
+
+        const options = {
+          key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+          amount: orderCreated.amount, // in paise
+          currency: "INR",
+          name: "DEVI SNACKS",
+          description: "Order Payment",
+          order_id: orderCreated.orderId,
+          //razorpay_order_id, razorpay_payment_id, razorpay_signature
+          handler: async function (response) {
+            const { razorpay_payment_id, razorpay_order_id, razorpay_signature } = response;
+
+            const verified = await verifyPayment(
+              razorpay_order_id,
+              razorpay_payment_id,
+              razorpay_signature
+            );
+
+            if (verified) {
+              navigate("/orders");
+            }
+          },
+          prefill: {
+            name: user?.name,
+            email: user?.email,
+            contact: phone,
+          },
+          theme: {
+            color: "#FFA500",
+          },
+        };
+
+        const razor = new window.Razorpay(options);
+        razor.open();
+      } catch (err) {
+        console.error(err);
+        toast.error("Payment initiation failed");
       }
-    // Proceed to checkout page with necessary data
+    }
+
   }
-}
 
   return (
     <div className="max-w-5xl mx-auto p-6 space-y-8">
@@ -236,9 +289,8 @@ export default function Cart() {
           {user?.addresses?.map((addr, idx) => (
             <label
               key={idx}
-              className={`p-4 border rounded-lg shadow-sm bg-white flex flex-col justify-between cursor-pointer transition-transform duration-300 hover:scale-105 ${
-                selectedAddress === addr._id ? "border-blue-500 bg-blue-50" : ""
-              }`}
+              className={`p-4 border rounded-lg shadow-sm bg-white flex flex-col justify-between cursor-pointer transition-transform duration-300 hover:scale-105 ${selectedAddress === addr._id ? "border-blue-500 bg-blue-50" : ""
+                }`}
             >
               <div className="flex items-start gap-2">
                 <input
@@ -323,7 +375,7 @@ export default function Cart() {
 
         <button
           disabled={loading}
-          onClick={async()=>await handleCheckout()}
+          onClick={async () => await handleCheckout()}
           className="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition-transform duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Proceed to Checkout

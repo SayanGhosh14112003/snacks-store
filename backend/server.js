@@ -9,6 +9,8 @@ import productRouter from './routes/product.routes.js';
 import addressRouter from './routes/address.routes.js'
 import cartRouter from './routes/cart.routes.js'
 import orderRouter from './routes/order.routes.js'
+import bodyParser from 'body-parser';
+import { razorpayWebhook } from './controllers/order.controllers.js';
 //improt routes
 
 //dotenv configuration
@@ -28,6 +30,11 @@ app.use('/api/product',productRouter);
 app.use('/api/address',addressRouter);
 app.use('/api/cart',cartRouter);
 app.use('/api/order',orderRouter);
+app.post(
+  "/api/webhook/razorpay",
+  bodyParser.raw({ type: "application/json" }),
+  razorpayWebhook
+);
 app.listen(PORT,()=>{
     connectDB();
     console.log("Listening at PORT: ",PORT);

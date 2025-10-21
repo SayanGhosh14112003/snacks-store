@@ -417,7 +417,43 @@ getOrders: async () => {
       set({ loading: false });
     }
   },
+  createOrder: async (cart, address) => {
+    try {
+      set({ loading: true });
+      const res = await axios.post(`${baseURL}/order/create-order`, { cart, address }, { withCredentials: true });
+      if (res?.data?.success) {
+        return res.data.data; // return order for Razorpay checkout
+      } else {
+        toast.error(res?.data?.message || "Failed to place order");
+        return null;
+      }
+    } catch (err) {
+      toast.error("Failed to place order");
+      return null;
+    } finally {
+      set({ loading: false });
+    }
+  },
 
+  verifyPayment: async (razorpay_order_id, razorpay_payment_id, razorpay_signature) => {
+    try {
+      set({ loading: true });
+      const res = await axios.post(`${baseURL}/order/verify-payment`, { razorpay_order_id, razorpay_payment_id, razorpay_signature }, { withCredentials: true });
+      if (res?.data?.success) {
+        toast.success("Payment verified successfully");
+        set({ cart: [] });
+        return true;
+      } else {
+        toast.error(res?.data?.message || "Payment verification failed");
+        return false;
+      }
+    } catch (err) {
+      toast.error("Payment verification failed");
+      return false;
+    } finally {
+      set({ loading: false });
+    }
+  },
 }));
 
 

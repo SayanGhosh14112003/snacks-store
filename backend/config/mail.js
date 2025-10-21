@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 
-const sendMail=(to,subject,text)=>{
+const sendMail=(to,subject,htmlContent)=>{
     let transporter = nodemailer.createTransport({
       service: 'gmail',
       secure:true,
@@ -14,7 +14,7 @@ const sendMail=(to,subject,text)=>{
     from: 'Sayan Ghosh',
     to,
     subject,
-    text:text
+    html: htmlContent
   };
 
   transporter.sendMail(mailOptions, function(error, info){

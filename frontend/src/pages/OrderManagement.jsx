@@ -108,6 +108,15 @@ export default function OrderManagement() {
                 <p className="text-sm text-gray-500 mt-1">
                   Payment Mode:{" "}
                   <span className="font-semibold">{order.payment.mode}</span>
+                  {
+                    order.payment.mode === "ONLINE" && order.payment.razorpay_payment_id && (
+                      <>
+                        <span className="text-xs text-gray-400">
+                           (Payment ID: {order.payment.razorpay_payment_id})
+                        </span>
+                      </>
+                    )
+                  }
                 </p>
                 <p className="text-sm text-gray-500 mt-1">
                   Customer Phone:{" "}

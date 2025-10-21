@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import useUserStore from "../store/userStore";
-import { UserCog, MapPin, Shield, X } from "lucide-react";
-
+import { UserCog, MapPin, Shield, X, StepBack } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 export default function UserManagement() {
   const userList = useUserStore((state) => state.userList);
   const getAllUsers = useUserStore((state) => state.getAllUsers);
@@ -9,7 +9,8 @@ export default function UserManagement() {
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [showRoleModal, setShowRoleModal] = useState(false);
   const [activeTab, setActiveTab] = useState("admin");
-  const changeRole=useUserStore((state)=>state.changeRole)
+  const changeRole = useUserStore((state) => state.changeRole)
+  const navigate = useNavigate()
   useEffect(() => {
     getAllUsers();
   }, []);
@@ -40,21 +41,27 @@ export default function UserManagement() {
 
   return (
     <div className="min-h-screen p-8 bg-gradient-to-br from-orange-50 to-yellow-50">
-      <h1 className="text-4xl font-extrabold text-center bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent mb-8">
+      <button
+        onClick={() => navigate(-1)}
+        className="mx-auto flex items-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 text-white px-5 py-2.5 rounded-full shadow-md hover:from-orange-600 hover:to-red-600 transition-all duration-300 active:scale-95"
+      >
+        <StepBack className="w-5 h-5" />
+        <span className="font-medium">Go Back</span>
+      </button>
+      <h1 className="text-4xl font-extrabold text-center bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent my-8">
         User Management
       </h1>
 
       {/* Tabs */}
-      <div className="flex justify-center gap-4 mb-8">
+      <div className="flex justify-center gap-4 my-8">
         {tabs.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            className={`px-6 py-2 rounded-full text-white font-semibold transition-all duration-300 ${
-              activeTab === tab.key
+            className={`px-6 py-2 rounded-full text-white font-semibold transition-all duration-300 ${activeTab === tab.key
                 ? `bg-gradient-to-r ${tab.color} shadow-lg scale-105`
                 : "bg-gray-300 hover:bg-gray-400 text-gray-700"
-            }`}
+              }`}
           >
             {tab.label}
           </button>
@@ -123,15 +130,14 @@ export default function UserManagement() {
             {["admin", "merchant", "customer"].map((role) => (
               <button
                 key={role}
-                className={`px-4 py-2 rounded-lg text-white text-sm capitalize ${
-                  role === selectedUser.role
+                className={`px-4 py-2 rounded-lg text-white text-sm capitalize ${role === selectedUser.role
                     ? "bg-gray-400 cursor-not-allowed"
                     : "bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
-                }`}
+                  }`}
                 disabled={role === selectedUser.role}
-                onClick={async() => {
+                onClick={async () => {
                   // TODO: call your updateRole API here
-                  await changeRole(selectedUser?._id,role)
+                  await changeRole(selectedUser?._id, role)
                   console.log(`Change ${selectedUser.name} to ${role}`);
                   closeModals();
                 }}

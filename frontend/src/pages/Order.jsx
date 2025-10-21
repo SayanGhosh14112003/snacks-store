@@ -60,7 +60,7 @@ export default function Order() {
               </div>
               <div className="flex items-center gap-1">
                 <Wallet size={16} />
-                <span>{order.payment.mode=="COD"?"Cash on Delivery":"Paid"}</span>
+                <span>{order.payment.mode=="COD"?"Cash on Delivery":"Online Payment"}</span>
               </div>
             </div>
           </div>
