@@ -378,11 +378,32 @@ export const cashOnDelivery = async (req, res) => {
   }
 }
 
+
 export const getMyOrders = async (req, res) => {
   try {
     const user = req.user;
-    const orders = await Order.find({ user: user._id }).sort({ createdAt: -1 });
-    return res.status(200).json({ success: true, data: orders });
+
+    // Pagination parameters
+    const page = parseInt(req.query.page) || 1; // default page 1
+    const limit = parseInt(req.query.limit) || 5; // default 5 orders per page
+    const skip = (page - 1) * limit;
+
+    const totalOrders = await Order.countDocuments({ user: user._id });
+    const orders = await Order.find({ user: user._id })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    return res.status(200).json({
+      success: true,
+      data: orders,
+      pagination: {
+        totalOrders,
+        currentPage: page,
+        totalPages: Math.ceil(totalOrders / limit),
+        limit,
+      },
+    });
   } catch (err) {
     return res.status(500).json({
       success: false,
@@ -390,18 +411,39 @@ export const getMyOrders = async (req, res) => {
     });
   }
 };
+
 export const getAllOrders = async (req, res) => {
   try {
-    const orders = await Order.find().sort({ createdAt: -1 });
-    return res.status(200).json({ success: true, data: orders });
-  }
-  catch (err) {
+    let { page = 1, limit = 10 } = req.query;
+    page = parseInt(page);
+    limit = parseInt(limit);
+
+    const totalOrders = await Order.countDocuments();
+    const orders = await Order.find()
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    const totalPages = Math.ceil(totalOrders / limit);
+
+    return res.status(200).json({
+      success: true,
+      data: orders,
+      pagination: {
+        totalOrders,
+        totalPages,
+        currentPage: page,
+        limit,
+      },
+    });
+  } catch (err) {
     return res.status(500).json({
       success: false,
       message: err.message || "Something went wrong while fetching all orders",
     });
   }
 };
+
 
 export const updateOrderStatus = async (req, res) => {
   try {

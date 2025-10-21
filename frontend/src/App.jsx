@@ -16,6 +16,7 @@ import CategoryManagement from './pages/CategoryManagement'
 import UserManagement from './pages/UserManagement'
 import Account from './pages/Account'
 import ResetPassword from './pages/ResetPassword'
+import Loader from './components/Loader'
 function App() {
   const user = useUserStore((state) => state.user)
   const checkingAuth = useUserStore((state) => state.checkingAuth);
@@ -26,11 +27,7 @@ function App() {
     })()
   }, [])
   if (checkingAuth) {
-    return <div className="min-h-screen flex items-center justify-center bg-[rgb(254,243,226)] px-4">
-      <div className="bg-white shadow-2xl rounded-2xl w-full max-w-md p-8 transition-all duration-500 text-center text-[rgb(221,3,3)] font-bold text-xl">
-        Loading...
-      </div>
-    </div>
+    return <Loader />;
   }
   return (
     <>

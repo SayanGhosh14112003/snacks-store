@@ -363,37 +363,47 @@ const useUserStore = create((set) => ({
       set({ loading: false });
     }
   },
-  getMyOrders: async () => {
-    try {
-      set({ loading: true });
-      const res = await axios.get(baseURL + "/order/my-orders", { withCredentials: true });
-      if (res?.data?.success) {
-        set({ myOrders: res?.data?.data });
-      } else {
-        toast.error("Failed to fetch orders");
-      }
-    } catch (err) {
-      toast.error("Failed to fetch orders");
-    } finally {
-      set({ loading: false });
-    }
-  },
-getOrders: async () => {
-    try {
-      set({ loading: true });
-      const res = await axios.get(baseURL + "/order/all-orders", { withCredentials: true });
-      if (res?.data?.success) {
-        set({ orders: res?.data?.data });
-      } else {
-        toast.error("Failed to fetch orders");
-      }
-    } catch (err) {
+  getMyOrders: async (page = 1, limit = 5) => {
+  try {
+    set({ loading: true });
+    const res = await axios.get(`${baseURL}/order/my-orders?page=${page}&limit=${limit}`, {
+      withCredentials: true,
+    });
+    if (res?.data?.success) {
+      set({
+        myOrders: res?.data?.data,
+        pagination: res?.data?.pagination, // store pagination info
+      });
+    } else {
       toast.error("Failed to fetch orders");
     }
-    finally {
-      set({ loading: false });
+  } catch (err) {
+    toast.error("Failed to fetch orders");
+  } finally {
+    set({ loading: false });
+  }
+},
+getOrders: async (page = 1, limit = 5) => {
+  try {
+    set({ loading: true });
+    const res = await axios.get(`${baseURL}/order/all-orders?page=${page}&limit=${limit}`, {
+      withCredentials: true,
+    });
+
+    if (res?.data?.success) {
+      set({
+        orders: res.data.data,
+        ordersPagination: res.data.pagination,
+      });
+    } else {
+      toast.error("Failed to fetch orders");
     }
-  },
+  } catch (err) {
+    toast.error("Failed to fetch orders");
+  } finally {
+    set({ loading: false });
+  }
+},
   updateOrderStatus: async (orderId, status) => {
     try {
       set({ loading: true });

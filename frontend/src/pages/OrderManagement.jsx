@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { StepBack, Edit2, X, Eye } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import useUserStore from "../store/userStore";
+import Loader from "../components/Loader";
 
 export default function OrderManagement() {
   const formatDate = (isoDate) => {
@@ -16,21 +17,23 @@ export default function OrderManagement() {
       hour12: true,
     });
   };
-  const navigate = useNavigate();
 
+  const navigate = useNavigate();
   const orders = useUserStore((state) => state.orders);
+  const ordersPagination = useUserStore((state) => state.ordersPagination);
   const getOrders = useUserStore((state) => state.getOrders);
   const updateOrderStatus = useUserStore((state) => state.updateOrderStatus);
   const loading = useUserStore((state) => state.loading);
 
+  const [currentPage, setCurrentPage] = useState(1);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showProductModal, setShowProductModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [newStatus, setNewStatus] = useState("");
 
   useEffect(() => {
-    getOrders();
-  }, [getOrders]);
+    getOrders(currentPage, 6);
+  }, [getOrders, currentPage]);
 
   const handleUpdateStatus = async (e) => {
     e.preventDefault();
@@ -42,6 +45,7 @@ export default function OrderManagement() {
     setShowEditModal(false);
     setSelectedOrder(null);
     setNewStatus("");
+    getOrders(currentPage, 5); // refresh orders after update
   };
 
   return (
@@ -63,6 +67,9 @@ export default function OrderManagement() {
       </h1>
 
       {/* Orders Grid */}
+      {
+        loading && <Loader/>
+      }
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 mt-6">
         {orders?.length === 0 && !loading ? (
           <p className="text-center text-gray-500 col-span-full">
@@ -108,15 +115,14 @@ export default function OrderManagement() {
                 <p className="text-sm text-gray-500 mt-1">
                   Payment Mode:{" "}
                   <span className="font-semibold">{order.payment.mode}</span>
-                  {
-                    order.payment.mode === "ONLINE" && order.payment.razorpay_payment_id && (
+                  {order.payment.mode === "ONLINE" &&
+                    order.payment.razorpay_payment_id && (
                       <>
                         <span className="text-xs text-gray-400">
-                           (Payment ID: {order.payment.razorpay_payment_id})
+                          (Payment ID: {order.payment.razorpay_payment_id})
                         </span>
                       </>
-                    )
-                  }
+                    )}
                 </p>
                 <p className="text-sm text-gray-500 mt-1">
                   Customer Phone:{" "}
@@ -157,6 +163,27 @@ export default function OrderManagement() {
         )}
       </div>
 
+      {/* Pagination */}
+      {ordersPagination?.totalPages > 1 && (
+        <div className="flex justify-center gap-2 mt-6">
+          <button
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage((prev) => prev - 1)}
+            className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+          >
+            Prev
+          </button>
+          <span className="px-3 py-1">{currentPage} / {ordersPagination?.totalPages}</span>
+          <button
+            disabled={currentPage === ordersPagination?.totalPages}
+            onClick={() => setCurrentPage((prev) => prev + 1)}
+            className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+      )}
+
       {/* Edit Status Modal */}
       {showEditModal && selectedOrder && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
@@ -183,9 +210,7 @@ export default function OrderManagement() {
                 className="w-full border rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-orange-500"
               >
                 <option value="">Select Status</option>
-                <option value="ORDERED SUCCESSFULLY">
-                  ORDERED SUCCESSFULLY
-                </option>
+                <option value="ORDERED SUCCESSFULLY">ORDERED SUCCESSFULLY</option>
                 <option value="DELIVERED">DELIVERED</option>
                 <option value="CANCELLED">CANCELLED</option>
               </select>
@@ -231,9 +256,7 @@ export default function OrderManagement() {
                     className="w-16 h-16 rounded-md object-cover border"
                   />
                   <div>
-                    <p className="text-sm font-semibold text-gray-800">
-                      {p.title}
-                    </p>
+                    <p className="text-sm font-semibold text-gray-800">{p.title}</p>
                     <p className="text-xs text-gray-600">
                       Qty: {p.totalQuantity} × ₹{p.price}
                     </p>
