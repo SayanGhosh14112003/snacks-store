@@ -19,7 +19,7 @@ dotenv.config();
 const app=express({limit:"10mb"});
 const PORT=process.env.PORT || 5000;
 app.use(cors({
-  origin: "https://devi-snacks.netlify.app/",
+  origin: "https://devi-snacks.netlify.app",
   credentials: true,
 }));
 app.use(cookieParser());
