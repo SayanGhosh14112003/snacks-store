@@ -12,8 +12,8 @@ const generateTokens = (userId) => {
 };
 
 const setCookies = (res, accessToken, refreshToken) => {
-  res.cookie("accessToken", accessToken, { httpOnly: true, secure: false, sameSite: "lax", maxAge: 15 * 60 * 1000 });
-  res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: false, sameSite: "lax", maxAge: 60 * 60 * 1000 });
+  res.cookie("accessToken", accessToken, { httpOnly: true, secure: true, sameSite: "lax", maxAge: 15 * 60 * 1000 });
+  res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: true, sameSite: "lax", maxAge: 60 * 60 * 1000 });
 };
 
 // ------------------- EMAIL TEMPLATES -------------------
@@ -74,7 +74,7 @@ export const register = async (req, res) => {
     if (!userExists) {
       const user = new User({ name, email, password, OTP, OTP_EXPIRY: new Date(Date.now() + 15 * 60 * 1000) });
       await user.save();
-      await sendMail(email, "OTP Verification", generateOTPEmail(OTP));
+      sendMail(email, "OTP Verification", generateOTPEmail(OTP));
       return res.status(200).json({ success: true, message: "OTP sent to email" });
     }
 
@@ -102,7 +102,7 @@ export const verifyEmail = async (req, res) => {
     userExists.OTP_EXPIRY = undefined;
     await userExists.save();
 
-    await sendMail(email, "Welcome to Snacks Store", generateWelcomeEmail(userExists.name));
+    sendMail(email, "Welcome to Snacks Store", generateWelcomeEmail(userExists.name));
     return res.status(200).json({ success: true, message: "User successfully verified" });
   } catch (err) {
     res.status(err.status || 500).json({ success: false, message: err.message || "Something went wrong" });
@@ -175,7 +175,7 @@ export const resetPassword = async (req, res) => {
     userExists.FORGET_PASSWORD_EXPIRY = undefined;
     await userExists.save();
 
-    await sendMail(userExists.email, "Password Reset Successful", generatePasswordResetSuccessEmail());
+    sendMail(userExists.email, "Password Reset Successful", generatePasswordResetSuccessEmail());
     return res.status(200).json({ success: true, message: "Password reset successfully" });
   } catch (err) {
     res.status(err.status || 500).json({ success: false, message: err.message || "Something went wrong" });

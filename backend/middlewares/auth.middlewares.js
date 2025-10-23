@@ -15,17 +15,12 @@ export const checkUser = async (req, res, next) => {
     try {
       decoded = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
     } catch (err) {
-      // ❌ Token invalid or expired
-      res.clearCookie("accessToken", { httpOnly: true, sameSite: "strict", path: "/" });
-      res.clearCookie("refreshToken", { httpOnly: true, sameSite: "strict", path: "/" });
       return res.status(401).json({ success: false, message: "Invalid or expired token" });
     }
 
     const userId = decoded?.userId;
 
     if (!userId) {
-      res.clearCookie("accessToken", { httpOnly: true, sameSite: "strict", path: "/" });
-      res.clearCookie("refreshToken", { httpOnly: true, sameSite: "strict", path: "/" });
       return res.status(401).json({ success: false, message: "Invalid token" });
     }
 
@@ -39,8 +34,6 @@ export const checkUser = async (req, res, next) => {
     }
 
     if (!user) {
-      res.clearCookie("accessToken", { httpOnly: true, sameSite: "strict", path: "/" });
-      res.clearCookie("refreshToken", { httpOnly: true, sameSite: "strict", path: "/" });
       return res.status(401).json({ success: false, message: "User not found" });
     }
 
@@ -49,8 +42,6 @@ export const checkUser = async (req, res, next) => {
     next();
   } catch (err) {
     // ❌ Unexpected server error
-    res.clearCookie("accessToken", { httpOnly: true, sameSite: "strict", path: "/" });
-    res.clearCookie("refreshToken", { httpOnly: true, sameSite: "strict", path: "/" });
     return res.status(500).json({
       success: false,
       message: err.message || "Something went wrong while checking user",
