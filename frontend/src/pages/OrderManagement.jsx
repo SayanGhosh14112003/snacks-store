@@ -125,6 +125,18 @@ export default function OrderManagement() {
                     )}
                 </p>
                 <p className="text-sm text-gray-500 mt-1">
+                  Customer Name:{" "}
+                  <span className="font-semibold">
+                    {order.user?.name || "N/A"}
+                  </span>
+                </p>
+                <p className="text-sm text-gray-500 mt-1">
+                  Customer Email:{" "}
+                  <span className="font-semibold">
+                    {order.user?.email || "N/A"}
+                  </span>
+                </p>
+                <p className="text-sm text-gray-500 mt-1">
                   Customer Phone:{" "}
                   <span className="font-semibold">
                     {order.address?.phone || "N/A"}
