@@ -2,9 +2,8 @@ import nodemailer from 'nodemailer';
 
 const sendMail=(to,subject,htmlContent)=>{
     let transporter = nodemailer.createTransport({
-      service: 'gmail',
-      secure:false,
-      port:25,
+      service: 'smtp-relay.brevo.com',
+      port:587,
       auth: {
         user: process.env.MAIL_USER,
         pass:process.env.MAIL_PASSWORD
