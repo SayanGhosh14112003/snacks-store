@@ -422,7 +422,8 @@ export const getAllOrders = async (req, res) => {
     const orders = await Order.find()
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
-      .limit(limit);
+      .limit(limit)
+      .populate('user', 'name email'); ;
 
     const totalPages = Math.ceil(totalOrders / limit);
 
