@@ -153,7 +153,7 @@ export const forgetPassword = async (req, res) => {
     userExists.FORGET_PASSWORD_EXPIRY = new Date(Date.now() + 15 * 60 * 1000);
     await userExists.save();
 
-    const link = `http://localhost:5173/reset-password/${rawToken}`;
+    const link = `https://devi-snacks.netlify.app/reset-password/${rawToken}`;
     await sendMail(email, "Reset Password", generateResetPasswordEmail(link));
     return res.status(200).json({ success: true, message: "Reset password link sent to email" });
   } catch (err) {
