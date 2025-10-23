@@ -19,7 +19,7 @@ dotenv.config();
 const app=express({limit:"10mb"});
 const PORT=process.env.PORT || 5000;
 app.use(cors({
-  origin: ["http://localhost:5173", "http://localhost:5174"],
+  origin: ["http://localhost:5173", "http://localhost:5174","https://jovial-trifle-ff0eb2.netlify.app/"],
   credentials: true,
 }));
 app.use(cookieParser());
