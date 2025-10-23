@@ -12,8 +12,8 @@ const generateTokens = (userId) => {
 };
 
 const setCookies = (res, accessToken, refreshToken) => {
-  res.cookie("accessToken", accessToken, { httpOnly: true, secure: true, sameSite: "lax", maxAge: 100 * 24 * 60 * 60 * 1000 });
-  res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: true, sameSite: "lax", maxAge: 100 * 24 * 60 * 60 * 1000 });
+  res.cookie("accessToken", accessToken, { httpOnly: true, secure: true, sameSite: "node", maxAge: 100 * 24 * 60 * 60 * 1000 });
+  res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: true, sameSite: "none", maxAge: 100 * 24 * 60 * 60 * 1000 });
 };
 
 // ------------------- EMAIL TEMPLATES -------------------
