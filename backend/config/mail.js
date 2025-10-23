@@ -14,7 +14,7 @@ const sendMail = (to, subject, htmlContent) => {
 
   // mail options
   const mailOptions = {
-    from: `"Sayan Ghosh" <${process.env.MAIL_USER}>`, // must match verified email
+    from: `sayanvk90@gmail.com`, // must match verified email
     to,
     subject,
     html: htmlContent,
